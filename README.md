@@ -1,11 +1,44 @@
-# 1d-pd-automata
-a recreation of the Prisoner's Dilemma in 1d Celular Automata for a final project.
+# 1D Spatial Prisoner's Dilemma 🧬
 
+> **Trabalho da diciplina de Autômatos Celulares(UFRRJ)**
+> Uma recriação computacional do Dilema do Prisioneiro em Autômatos Celulares Unidimensionais, focada na visualização de padrões evolutivos e invasão de estratégias.
 
+---
 
+## 🚀 Como Executar o Projeto
 
-# Experiência
+Para clonar e rodar esta simulação na sua própria máquina, siga os passos abaixo no terminal:
 
+**1. Clone o repositório e entre na pasta:**
+```bash
+git clone [https://github.com/SEU_USUARIO/1d-pd-automata.git](https://github.com/SEU_USUARIO/1d-pd-automata.git)
+
+cd 1d-pd-automata
+```
+**2. Crie e ative o ambiente virtual:**
+
+No Linux/Mac/WSL:
+```bash
+python3 -m venv .venv
+
+source .venv/bin/activate
+```
+No Windows (CMD/PowerShell):
+```bash
+python -m venv .venv
+
+.venv\Scripts\activate
+```
+
+**3. Instale as dependências:**
+```bash
+pip install numpy matplotli
+```
+**4. Rode a simulação:**
+```bash
+python3 dilema.py
+```
+# 🔬 A Experiência e Regras do Sistema
 ## 1. O Ambiente e as Condições Iniciais
 
 - A simulação ocorre em uma matriz unidimensional (uma linha) com tamanho $L$. Para gerar os resultados finais, os autores usaram $L=1000$ células.
