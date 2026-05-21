@@ -5,40 +5,49 @@
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 Para clonar e rodar esta simulação na sua própria máquina, siga os passos abaixo no terminal:
 
 **1. Clone o repositório e entre na pasta:**
 ```bash
-git clone [https://github.com/SEU_USUARIO/1d-pd-automata.git](https://github.com/SEU_USUARIO/1d-pd-automata.git)
+git clone [https://github.com/SEU_USUARIO/1d-pd-automata.git](https://github.com/helcioDuarte/1d-pd-automata.git)
 
 cd 1d-pd-automata
 ```
-**2. Crie e ative o ambiente virtual:**
+**2. Criar e ativar o ambiente virtual (.venv) — passo a passo**
 
-No Linux/Mac/WSL:
+No Linux / macOS / WSL:
 ```bash
+# cria o ambiente
 python3 -m venv .venv
 
+# ativa o ambiente
 source .venv/bin/activate
 ```
-No Windows (CMD/PowerShell):
-```bash
-python -m venv .venv
 
+No Windows (CMD):
+```bat
+python -m venv .venv
 .venv\Scripts\activate
 ```
 
-**3. Instale as dependências:**
+**3. Instalar dependências**
+
+Com o ambiente ativado, instale tudo via `requirements.txt`:
 ```bash
-pip install numpy matplotli
+pip install -r requirements.txt
 ```
-**4. Rode a simulação:**
+
+**4. Executar a simulação**
+
+Ainda com a `.venv` ativada, rode o script principal do projeto (nome do arquivo no repositório):
 ```bash
-python3 dilema.py
+python3 dlema.py
 ```
-# 🔬 A Experiência e Regras do Sistema
+
+Se estiver no Windows e o comando acima falhar, tente `python dlema.py`.
+# A Experiência e Regras do Sistema
 ## 1. O Ambiente e as Condições Iniciais
 
 - A simulação ocorre em uma matriz unidimensional (uma linha) com tamanho $L$. Para gerar os resultados finais, os autores usaram $L=1000$ células.

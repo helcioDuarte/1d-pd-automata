@@ -90,8 +90,12 @@ class DilemaDoPrisioneiro1D:
         plt.xlabel("Jogador")
         plt.ylabel("Tempo")
         
-        plt.show()
-        
+        if plt.isinteractive():
+            plt.show()
+        else:
+            plt.savefig("dilema_prisioneiro_1D.png")
+            print("AVISO: Modo interativo não disponível no ambiente atual.")
+            print("Gráfico salvo como 'dilema_prisioneiro_1D.png'")
 
 if __name__ == "__main__":
     jogo = DilemaDoPrisioneiro1D(L=500, rho_0=0.7, T=1.40, z=7, rodadas=200) 
