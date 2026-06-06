@@ -11,7 +11,7 @@ Para clonar e rodar esta simulação na sua própria máquina, siga os passos ab
 
 **1. Clone o repositório e entre na pasta:**
 ```bash
-git clone [https://github.com/SEU_USUARIO/1d-pd-automata.git](https://github.com/helcioDuarte/1d-pd-automata.git)
+git clone https://github.com/helcioDuarte/1d-pd-automata.git
 
 cd 1d-pd-automata
 ```
@@ -75,3 +75,38 @@ O sistema é totalmente determinístico e as regras de evolução darwiniana sã
 Para ter certeza de que replicamos a experiência com sucesso, o nosso código deve ser capaz de gerar duas saídas principais:
 - Gráficos de Proporção Assintótica ($\rho_\infty$): Você deve rodar o jogo até que ele alcance um equilíbrio estacionário (ou dinâmico médio) e medir a proporção final de cooperadores na grade. Ao variar o valor da Tentação ($T$) no eixo X, seu gráfico deve gerar "degraus" que mostram os pontos matemáticos exatos de transição onde a cooperação cai.
 - Mapeamento de Padrões Espaço-Temporais: O grande diferencial desta pesquisa. Você deve plotar uma imagem 2D onde o eixo X representa as células (jogadores) e o eixo Y representa o avanço do tempo (rodadas). Ao colorir cooperadores de azul e desertores de vermelho, você deverá ser capaz de observar o surgimento de estruturas geométricas. Com o tempo, essas estruturas formam linhas retas conhecidas como "dedos" (fingers) e linhas diagonais chamadas de "planadores" (gliders) que viajam pelo espaço e colidem entre si.
+
+## Uso avançado (CLI)
+
+O script principal agora aceita argumentos via linha de comando e gera ensembles e varreduras em `T` automaticamente. Exemplos:
+
+- Rodar uma execução única e salvar o mapa espaço-temporal:
+```bash
+source impl/venv/bin/activate
+python3 impl/dlema.py --T 1.4 --L 500 --rho0 0.7 --z 7 --rodadas 500
+```
+
+- Rodar um ensemble para um valor de `T` (múltiplas sementes) e salvar CSV com resultados:
+```bash
+python3 impl/dlema.py --T 1.2 --ensembles 100 --out impl/out_results
+```
+
+- Fazer varredura em `T` e plotar `rho_infty vs T` (salva CSV + PNG em `--out`):
+```bash
+python3 impl/dlema.py --Tmin 1.0 --Tmax 2.0 --dT 0.05 --ensembles 100 --out impl/out_scan
+```
+
+Saídas geradas automaticamente em `--out` (ou em `out` por padrão):
+- `ensemble_T{T}_ensemble.csv` — valores por run do ensemble;
+- `rho_infty_vs_T.csv` — média e desvio por T (quando usar `--Tmin/--Tmax`);
+- `rho_infty_vs_T.png` — gráfico com barras de erro mostrando `rho_infty` vs `T`.
+
+Argumentos principais do CLI:
+- `--L`, `--rho0`, `--T`, `--Tmin`, `--Tmax`, `--dT`, `--z`, `--rodadas`, `--ensembles`, `--seed`, `--out`, `--symmetric`, `--viz_esq`, `--viz_dir`, `--self_interaction`.
+
+## Notas de implementação e desempenho
+
+- Vetorização: os cálculos de payoff e a atualização foram vetorizados usando `numpy.roll` e operações em arrays, o que reduz significativamente o tempo por rodada em relação a loops Python puros.
+- Paralelização: ensembles ainda são executados sequencialmente. Para acelerar ensembles grandes (por exemplo `ensembles >= 1000`), recomendo paralelizar `run_ensemble` com `multiprocessing` ou `joblib`.
+- Reprodutibilidade: use `--seed` para controlar a RNG e permitir replicação dos resultados.
+- Recomendações para reproduzir figuras do artigo: use `--L 1000`, `--rodadas 500` e ensembles grandes (100–1000) para calcular médias robustas; aumente `--dT`/escolha os `T` de interesse conforme as transições teóricas.
