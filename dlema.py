@@ -260,11 +260,15 @@ def _main():
     args = parser.parse_args()
 
     if args.T is not None:
-        mean, std, _ = run_ensemble(args.L, args.rho0, args.T, args.z, args.rodadas, args.symmetric, args.viz_esq, args.viz_dir, args.self_interaction, runs=args.ensembles, seed=args.seed, out_prefix=os.path.join(args.out, 'ensemble'), workers=args.workers)
-        print(f"T={args.T} -> mean={mean:.6f}, std={std:.6f}")
+        if args.ensembles == 1:
+            rho_final, jogo = run_single(args.L, args.rho0, args.T, args.z, args.rodadas, args.symmetric, args.viz_esq, args.viz_dir, args.self_interaction, seed=args.seed)
+            jogo.exibir_grafico()
+            print(f"T={args.T} -> rho_final={rho_final:.6f}")
+        else:
+            mean, std, _ = run_ensemble(args.L, args.rho0, args.T, args.z, args.rodadas, args.symmetric, args.viz_esq, args.viz_dir, args.self_interaction, runs=args.ensembles, seed=args.seed, out_prefix=os.path.join(args.out, 'ensemble'), workers=args.workers)
+            print(f"T={args.T} -> mean={mean:.6f}, std={std:.6f}")
     else:
         scan_T(args.Tmin, args.Tmax, args.dT, args.L, args.rho0, args.z, args.rodadas, args.symmetric, args.viz_esq, args.viz_dir, args.self_interaction, runs_per_T=args.ensembles, seed=args.seed, out_dir=args.out, workers=args.workers)
-
 
 if __name__ == "__main__":
     _main()
