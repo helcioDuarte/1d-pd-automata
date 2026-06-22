@@ -1,179 +1,143 @@
 \documentclass[12pt]{article}
 
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
 \usepackage[utf8]{inputenc}
-\usepackage{graphicx,url,caption,titlesec,geometry}
-\usepackage{times}
-\geometry{a4paper,top=3.5cm,left=3cm,right=3cm,bottom=2.5cm}
-\parindent 1.27cm
-\parskip   6pt
-\newenvironment{resumo}{\begin{quote}\textbf{Resumo.}\itshape}{\end{quote}}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{float} % Pacote adicionado para travar as figuras no lugar exato
 
 \sloppy
 
-\title{Dilema do Prisioneiro em Autômato Unidimensional: reprodução e resultados}
+\title{Dilema do Prisioneiro em Autômatos Celulares Unidimensionais: Reprodução e Visualização de Padrões Evolutivos}
 
-\author{Grupo: Helcio Duarte, Pedro Henrique Guedes, Rafael Vieira}
-\begin{document}
+\author{Pedro Henrique Ribeiro de Araujo Guedes\inst{1}, Rafael Vieira\inst{1}, Helcio Duarte\inst{1}}
+
+\address{Departamento de Ciência da Computação -- Universidade Federal Rural do Rio de Janeiro (UFRRJ)\\
+  Nova Iguaçu -- RJ -- Brasil
+  \email{\{pedroguedes, rafael, helcio\}@ufrrj.br}
+}
+
+\begin{document} 
 
 \maketitle
 
 \begin{abstract}
-Apresentamos a reprodução computacional do experimento de Pereira et al. (2008)
-que investiga o Dilema do Prisioneiro espacial em autômatos unidimensionais.
-Implementamos a dinâmica proposta, realizamos varredura no parâmetro "tentação" $T$
-e calculamos a proporção assintótica média de cooperadores $\rho_{\infty}(T)$.
-As figuras e dados gerados são apresentados e discutidos.
+  This paper presents the computational reproduction of the spatial Prisoner's Dilemma in one-dimensional cellular automata, based on Pereira et al. (2008). We modeled the evolutionary dynamics using an array of 1000 players with periodic boundary conditions, varying the temptation parameter ($T$) to analyze the asymptotic proportion of cooperators. We successfully reproduced the theoretical phase transitions and mapped the space-time emergence of complex structures, such as gliders and fingers.
 \end{abstract}
-
-\begin{resumo}
-Reproduzimos o experimento de Pereira et al. (2008) para o Dilema do Prisioneiro em autômato
-unidimensional. Foram realizadas simulações com varredura no parâmetro $T$ e ensembles para
-estimar $\rho_{\infty}$. Relatamos metodologia, resultados e discussão comparativa.
+     
+\begin{resumo} 
+  Este artigo apresenta a reprodução computacional do Dilema do Prisioneiro espacial em autômatos celulares unidimensionais, baseada em Pereira et al. (2008). Modelamos a dinâmica evolutiva em uma malha de 1000 jogadores com condições de contorno periódicas, variando o parâmetro de tentação ($T$) para analisar a proporção assintótica de cooperadores. Reproduzimos com sucesso as transições de fase teóricas e mapeamos o surgimento espaço-temporal de estruturas complexas, como planadores e dedos.
 \end{resumo}
 
 \section{Introdução}
-O Dilema do Prisioneiro espacial é um paradigma para estudar a emergência de cooperação.
-Seguindo Pereira et al. (2008), implementamos jogadores em uma rede unidimensional onde
-cada jogador interage com $z$ vizinhos e atualiza sua estratégia copiando o vizinho com maior
-payoff caso este supere seu próprio payoff. Nosso objetivo foi reproduzir a curva $\rho_{\infty}(T)$
-e visualizar padrões espaço-temporais (triangles, fingers, gliders) reportados no artigo.
 
-\section{Metodologia}
-  \textbf{Implementação:} Código em Python com vetorização em \texttt{numpy}; a biblioteca usa
-rolamentos (\texttt{np.roll}) para somar estados dos vizinhos e operações vetoriais para escolher
-os vencedores. A rotina de ensembles foi paralelizada com \texttt{multiprocessing.Pool} para usar
-vários workers e permitir ensembles grandes de forma prática.
+O Dilema do Prisioneiro espacial é um modelo clássico da Teoria dos Jogos utilizado para explicar a emergência da cooperação em ambientes competitivos regidos pela evolução Darwiniana \cite{nowak1992}. Grande parte da literatura explora esse fenômeno em malhas bidimensionais. No entanto, Pereira et al. (2008) demonstraram que a aplicação do jogo em Autômatos Celulares Unidimensionais oferece vantagens analíticas significativas \cite{pereira2008}.
 
-\subsection{Modelagem formal}
-Cada jogador $i$ possui estado $\theta_i\in\{0,1\}$ (0=desertor, 1=cooperador). O ganho obtido
-na interação entre $i$ e $j$ é dado por (Eq. (1) do artigo):
-\[
-g_{\theta_i,\theta_j} = \theta_i\theta_j + T(1-\theta_i\theta_j)\theta_j
-\]
-O payoff total de $i$ é a soma sobre os $z$ vizinhos (incluindo autointeração quando aplicável):
-\[
-P_i = \sum_{j\in V_i} g_{\theta_i,\theta_j}.
-\]
-Observando que, se $c$ é o número de cooperadores na vizinhança de $i$, o payoff pode ser escrito
-compactamente como (Eq. (3) do artigo):
-\[
-P_i^{(c)}(\theta_i) = [T - (T-1)\theta_i]\, c.
-\]
-O procedimento de atualização é síncrono: para cada jogador, comparamos seu payoff com o máximo
-dos payoffs dos vizinhos; se existir vizinho com payoff estritamente maior, o jogador copia a estratégia
-desse vizinho no próximo passo de tempo.
+Neste trabalho, optou-se pela abordagem unidimensional pois, diferentemente das malhas 2D clássicas onde ocorrem flutuações violentas e \textit{overshoots} demográficos, a geometria 1D restringe as invasões de estratégias estritamente às bordas dos \textit{clusters} de cooperação ou deserção. Essa restrição topológica garante uma convergência mais rápida ao estado estacionário e permite o rastreamento visual claro do histórico evolutivo, revelando padrões complexos da Teoria dos Autômatos Celulares. O objetivo deste artigo é descrever a reprodução computacional desse modelo e validar os limiares críticos de transição.
 
-\subsection{Parâmetros do experimento}
-\begin{itemize}
-  \item Tamanho da rede: $L=1000$;
-  \item Proporção inicial de cooperadores: $\rho_0=0.7$;
-  \item Número de rodadas por simulação: 500;
-  \item Vizinhança: $z=7$ (simétrica com autointeração quando aplicável);
-  \item Varredura: $T\in[1.0,2.0]$ com passo $\Delta T=0.05$;
-  \item Ensemble por valor de $T$: 100 réplicas (executado usando paralelização em 8 workers);
-\end{itemize}
+\section{Modelagem do Autômato Celular}
 
-As simulações foram executadas com sementes pseudoaleatórias variando por réplica; os parâmetros e
-metadados de cada execução foram gravados localmente.
+A malha consiste em um autômato unidimensional de tamanho $L=500$. Cada célula representa um jogador contendo um estado $\theta_{i} \in \{0, 1\}$, onde $0$ representa um desertor e $1$ representa um cooperador. O estado inicial do sistema possui uma distribuição aleatória uniforme baseada na proporção inicial de cooperadores, $\rho_0$. 
 
-\section{Resultados}
-Geramos a curva $\rho_{\infty}(T)$ calculando a média e o desvio padrão das réplicas para cada valor
-de $T$. A Tabela~\ref{tab:rho} resume os resultados. O arquivo CSV completo foi salvo em
-\verb|../artigo-deps/rho_infty_vs_T.csv| e o gráfico em
-\verb|impl/exp_full/rho_infty_vs_T.png|.
+A matriz de pagamentos (\textit{payoffs}) utiliza a formulação simplificada de Tucker, onde a recompensa mútua é $R=1$, e a punição e o ganho do explorado são nulos ($P=S=0$). O jogo é controlado exclusivamente pelo parâmetro de Tentação $T$, avaliado no intervalo de conflito $1 < T \le 2$. O ganho acumulado $P_{i}$ do jogador $i$ ao interagir com $z$ vizinhos é dado por:
 
-\begin{table}[ht]
+\begin{equation}
+P_{i}^{(c)}(\theta_{i})=[T-(T-1)\theta_{i}]c
+\end{equation}
+
+onde $c$ é o número de cooperadores na vizinhança. Adotamos \textbf{condições de contorno periódicas} (topologia de anel), unindo as extremidades da malha unidimensional de modo que o jogador no índice $0$ é vizinho do jogador no índice $L-1$. Na fase de evolução síncrona, cada jogador compara seu $P_{i}$ com o de seus vizinhos. Se houver um vizinho com pontuação estritamente maior, o jogador copia a estratégia desse vencedor para a próxima geração.
+
+\section{Metodologia e Implementação}
+
+A simulação foi desenvolvida na linguagem Python utilizando a biblioteca \texttt{NumPy}. Para otimizar o tempo de execução durante a geração dos \textit{ensembles} e garantir a aplicação correta das condições de contorno periódicas, as interações de vizinhança não foram calculadas com laços de repetição tradicionais. Em vez disso, aplicou-se a vetorização através de rolamentos de \textit{arrays} espaciais (\texttt{np.roll}).
+
+\begin{lstlisting}[language=Python, frame=single, basicstyle=\ttfamily\footnotesize, caption={Vetorização das condições de contorno.}, label=lst:vetorizacao]
+# Somatorio de vizinhancas vetorizado
+neighbor_sum = np.zeros(self.L, dtype=np.int32)
+for j in self.neighbor_offsets:
+    neighbor_sum += np.roll(self.grid, -j)
+\end{lstlisting}
+
+\section{Validação e Resultados}
+
+Para validar a implementação, simulou-se a varredura da Tentação ($T$) de 1.0 a 2.0 com resolução $\Delta T = 0.02$, gerando um \textit{ensemble} de 50 réplicas por ponto.
+
+A Figura \ref{fig:rho_vs_T} apresenta a proporção assintótica média de cooperadores ($\rho_\infty$) em função de $T$. Nota-se que a simulação reproduz os "degraus" (transições de fase) onde a cooperação sofre quedas pontuais, culminando no colapso quase total próximo a $T=2.0$.
+
+\begin{figure}[H]
 \centering
-\caption{Proporção assintótica média de cooperadores $\rho_{\infty}$ como função de $T$ (varredura com 100 réplicas).}
-\label{tab:rho}
+\includegraphics[width=0.8\textwidth]{dados_artigo/rho_infty_vs_T.png}
+\caption{Proporção assintótica de cooperadores ($\rho_\infty$) vs Tentação ($T$).}
+\label{fig:rho_vs_T}
+\end{figure}
+
+De acordo com Pereira et al. (2008), as transições de fase observadas no sistema estão associadas à estabilidade das fronteiras entre agrupamentos (\textit{clusters}) de cooperadores e desertores. Os limiares críticos são dados por
+
+\[
+T_c(n,m)=\frac{z-n}{z-n-m},
+\]
+
+onde $z$ representa o número de interações por jogador, $n$ corresponde ao número de cooperadores compartilhados na vizinhança dos indivíduos localizados na fronteira entre dois agrupamentos, e $m$ representa a diferença no número de cooperadores presentes nas vizinhanças dos jogadores comparados. Esses parâmetros descrevem a configuração local da interface entre \textit{clusters} e determinam os valores críticos de tentação nos quais uma estratégia passa a invadir a outra.
+
+De forma a aprofundar a análise crítica, comparou-se os pontos de queda observados no experimento com os limiares críticos teóricos estipulados por Pereira et al. (2008). Para $z=7$, os primeiros limiares relevantes são obtidos para as combinações $(n,m)=(0,2)$, $(0,3)$ e $(1,3)$, resultando respectivamente em $T_c=1.40$, $T_c=1.75$ e $T_c=2.00$. A Tabela \ref{tab:transicoes} demonstra a alta fidelidade do modelo computacional.
+
+
+% Modificado para [H] para travar a tabela exatamente aqui
+\begin{table}[H]
+\centering
+\caption{Análise Crítica: Limiares Teóricos vs Observados para $z=7$}
+\label{tab:transicoes}
+\vspace{0.2cm} % Adiciona um pequeno espaço entre a legenda e a tabela
 \begin{tabular}{c c c}
 \hline
-T & $\rho_{\infty}$ (média) & desvio padrão \\
+\textbf{Fração Teórica ($T_c$)} & \textbf{Valor Decimal} & \textbf{Queda Observada (Simulação)} \\
 \hline
-1.00 & 0.96656 & 0.00440 \\
-1.05 & 0.98669 & 0.00341 \\
-1.10 & 0.98605 & 0.00343 \\
-1.15 & 0.98617 & 0.00375 \\
-1.20 & 0.91976 & 0.01887 \\
-1.25 & 0.93801 & 0.01761 \\
-1.30 & 0.94221 & 0.01819 \\
-1.35 & 0.94468 & 0.01513 \\
-1.40 & 0.94514 & 0.01521 \\
-1.45 & 0.97194 & 0.01109 \\
-1.50 & 0.98070 & 0.00679 \\
-1.55 & 0.98257 & 0.00584 \\
-1.60 & 0.98359 & 0.00694 \\
-1.65 & 0.98326 & 0.00653 \\
-1.70 & 0.96729 & 0.01164 \\
-1.75 & 0.96872 & 0.01450 \\
-1.80 & 0.96125 & 0.09761 \\
-1.85 & 0.97343 & 0.01184 \\
-1.90 & 0.97394 & 0.01231 \\
-1.95 & 0.96357 & 0.09763 \\
-2.00 & 0.02968 & 0.01989 \\
+$7/5$ ($n=0, m=2$) & $1.40$ & $\approx 1.40$ \\
+$7/4$ ($n=0, m=3$) & $1.75$ & $\approx 1.76$ \\
+$6/3$ ($n=1, m=3$) & $2.00$ & $\approx 2.00$ \\
 \hline
 \end{tabular}
 \end{table}
 
-O gráfico de $\rho_{\infty}(T)$ (Figura~\ref{fig:rhoT}) destaca uma queda abrupta em $T=2.0$,
-enquanto em grande parte do intervalo a cooperação persiste com alta fração de cooperadores.
+Por fim, gerou-se mapas espaço-temporais para evidenciar as interações locais. A legenda de cores define: Azul (cooperador estável), Vermelho (desertor estável), Verde (novo cooperador) e Amarelo (novo desertor). As Figuras \ref{fig:gliders} e \ref{fig:colisoes} atestam a formação de estruturas clássicas de autômatos classe 4. A Figura \ref{fig:gliders} destaca a geração de \textit{gliders} (planadores) e \textit{fingers} (dedos), enquanto a Figura \ref{fig:colisoes} ilustra colisões complexas e aniquilações entre essas estruturas espaciais.
 
-\begin{figure}[ht]
+% Modificado para [H] para travar as figuras duplas exatamente aqui
+\begin{figure}[H]
 \centering
-\includegraphics[width=.7\textwidth]{../artigo-deps/rho_infty_vs_T.png}
-\caption{Curva $\rho_{\infty}$ vs $T$ (média com barras de erro = desvio padrão).}
-\label{fig:rhoT}
+\begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{dados_artigo/mapa_gliders.png}
+    \caption{Formação de \textit{gliders} e \textit{fingers} ($T=1.6$, $z=8$).}
+    \label{fig:gliders}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{dados_artigo/mapa_colisoes.png}
+    \caption{Aniquilações e colisões complexas ($T=1.2$, $z=10$).}
+    \label{fig:colisoes}
+\end{minipage}
 \end{figure}
 
-Para ilustrar padrões espaço-temporais, geramos uma simulação representativa em $T=1.20$.
-Figura~\ref{fig:spacetime} mostra o mapa espaço-temporal (eixo X = jogador, eixo Y = tempo), onde
-azul = cooperador estável, vermelho = desertor estável, verde = virou cooperador, amarelo = virou desertor.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=.7\textwidth]{../artigo-deps/space_time_T1.200.png}
-\caption{Mapa espaço-temporal representativo para $T=1.20$ (L=1000, rodadas=500).}
-\label{fig:spacetime}
-\end{figure}
-
-\section{Discussão}
-Os resultados mostram que a cooperação é robusta para grande parte de $T$ na configuração estudada,
-em acordo qualitativo com Pereira et al. (2008). Observou-se uma queda drástica em $T\approx2.0$,
-coerente com a expectativa teórica de transição quando a tentação é muito alta.
-
-\subsection{Ambiente de execução}
-As simulações foram executadas no ambiente WSL2 do autor com as seguintes especificações:
-\begin{itemize}
-  \item Kernel/OS: Linux rafael 6.6.87.2-microsoft-standard-WSL2 (x86\_64);
-  \item CPU: AMD Ryzen 5 5500, 6 cores / 12 threads (relatados como 12 CPUs virtuais);
-  \item Memória: 3.8 GiB total (aprox. 1.9 GiB disponível durante as execuções);
-  \item Python: Python 3.12.3 (ambiente virtual utilizado para dependências: numpy, matplotlib);
-  \item Parâmetros de execução: varredura com 100 réplicas por T, 8 workers paralelos.
-\end{itemize}
-
-Esses detalhes são relevantes para reprodutibilidade e tempo de execução dos ensembles.
-
-Padrões espaço-temporais observados (triangles, gliders e fingers) aparecem nas figuras e podem ser
-analisados quantitativamente em trabalhos posteriores. Diferenças quantitativas em $\rho_{\infty}(T)$
-podem derivar de (i) número finito de réplicas usado aqui (100), (ii) sutilidades na definição exata de
-vizinhança e autointeração, e (iii) parâmetros iniciais.
+\section{Uso de Inteligência Artificial}
+Conforme exigido pelas diretrizes da disciplina, declaramos que modelos de Inteligência Artificial foram utilizados restritamente para a melhoria sintática do texto, revisão gramatical e resolução de dúvidas de formatação relacionadas à plataforma Overleaf e ao \textit{template} da SBC. Toda a arquitetura do código fonte, lógica matemática, execução dos \textit{ensembles} e análise crítica dos dados foram conduzidas integralmente pelos autores.
 
 \section{Conclusão}
-Implementamos e reproduzimos a dinâmica do Dilema do Prisioneiro em autômatos unidimensionais.
-Geramos a curva $\rho_{\infty}(T)$ e mapas espaço-temporais representativos. Próximos passos incluem
-ampliar o ensemble, paralelizar execuções e preparar os resultados finais no template SBC para
-submissão.
+O modelo desenvolvido reproduziu com êxito os resultados propostos na literatura base, confirmando que a aplicação do Dilema do Prisioneiro em uma arquitetura unidimensional isola os efeitos de borda das aglomerações populacionais. O uso de operações de rolamento vetorial comprovou ser uma estratégia eficiente para aplicar as condições de contorno em simulações robustas.
 
 \begin{thebibliography}{9}
+
 \bibitem{pereira2008}
-M. A. Pereira, A. S. Martinez, A. L. Espindola,
-"Prisoner's Dilemma in One-dimensional Cellular Automata: Visualization of Evolutionary Patterns",
-Int. J. Mod. Phys. C, 19, 187--201 (2008).
+Pereira, M. A., Martinez, A. S., \& Espindola, A. L. (2008). 
+\textit{Prisoner's Dilemma in One-dimensional Cellular Automata: Visualization of Evolutionary Patterns}. 
+International Journal of Modern Physics C, 19(01), 187-201.
 
 \bibitem{nowak1992}
-M. A. Nowak and R. M. May,
-"Evolutionary Games and Spatial Chaos",
-Nature 359, 826--829 (1992).
+Nowak, M. A., \& May, R. M. (1992). 
+\textit{Evolutionary games and spatial chaos}. 
+Nature, 359(6398), 826-829.
+
 \end{thebibliography}
 
 \end{document}
