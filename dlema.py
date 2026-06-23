@@ -140,7 +140,7 @@ class DilemaDoPrisioneiro1D:
         plt.figure(figsize=(10, 6))
         plt.imshow(self.historico_cores, cmap=mapa_cores, aspect='auto', interpolation='none')
         
-        plt.title(f"Dilema do Prisioneiro 1D (T={self.T}, L={self.L}, z={self.z} Assimétrico)")
+        plt.title(f"Dilema do Prisioneiro 1D (T={self.T}, L={self.L}, z={self.z})")
         plt.xlabel("Jogador")
         plt.ylabel("Tempo")
         
