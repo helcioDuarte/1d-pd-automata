@@ -61,6 +61,8 @@ for j in self.neighbor_offsets:
     neighbor_sum += np.roll(self.grid, -j)
 \end{lstlisting}
 
+Os experimentos foram executados em um ambiente Windows 10 com subsistema Linux (WSL), utilizando Python 3.12.3 e NumPy 2.5.0. O processador utilizado foi um Intel Xeon E5-2680 v4 (2,40 GHz). A geração dos \textit{ensembles} foi paralelizada via \texttt{multiprocessing}, com múltiplos processos executados simultaneamente para reduzir o tempo total de simulação.
+
 \section{Validação e Resultados}
 
 Para validar a implementação, simulou-se a varredura da Tentação ($T$) de 1.0 a 2.0 com resolução $\Delta T = 0.02$, gerando um \textit{ensemble} de 50 réplicas por ponto.
