@@ -101,6 +101,15 @@ Saídas geradas automaticamente em `--out` (ou em `out` por padrão):
 - `rho_infty_vs_T.csv` — média e desvio por T (quando usar `--Tmin/--Tmax`);
 - `rho_infty_vs_T.png` — gráfico com barras de erro mostrando `rho_infty` vs `T`.
 
+<!-- 
+python3 dlema.py --Tmin 1.0 --Tmax 2.0 --dT 0.02 --ensembles 50 --L 1000 --rho0 0.7 --z 7 --rodadas 500 --symmetric --out dados_artigo
+python3 dlema.py --T 1.2 --L 1000 --rho0 0.7 --z 7 --rodadas 500 --symmetric
+
+python3 dlema.py --T 1.6 --L 500 --rho0 0.9 --z 8 --rodadas 500 --symmetric
+python3 dlema.py --T 1.2 --L 500 --rho0 0.9 --z 10 --rodadas 500 --symmetric
+--> 
+
+
 Argumentos principais do CLI:
 - `--L`, `--rho0`, `--T`, `--Tmin`, `--Tmax`, `--dT`, `--z`, `--rodadas`, `--ensembles`, `--seed`, `--out`, `--symmetric`, `--viz_esq`, `--viz_dir`, `--self_interaction`.
 
