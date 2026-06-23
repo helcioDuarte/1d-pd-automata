@@ -17,7 +17,7 @@
 
 \address{Departamento de Ciência da Computação -- Universidade Federal Rural do Rio de Janeiro (UFRRJ)\\
   Nova Iguaçu -- RJ -- Brasil
-  \email{\{pedroguedes, rafael, helcio\}@ufrrj.br}
+  \email{\{pedrohguedes, rafaelvsilva, hdd2004\}@ufrrj.br}
 }
 
 \begin{document} 
@@ -61,7 +61,7 @@ for j in self.neighbor_offsets:
     neighbor_sum += np.roll(self.grid, -j)
 \end{lstlisting}
 
-Os experimentos foram executados em um ambiente Windows 10 com subsistema Linux (WSL), utilizando Python 3.12.3 e NumPy 2.5.0. O processador utilizado foi um Intel Xeon E5-2680 v4 (2,40 GHz). A geração dos \textit{ensembles} foi paralelizada via \texttt{multiprocessing}, com múltiplos processos executados simultaneamente para reduzir o tempo total de simulação.
+Os experimentos foram executados em um ambiente Windows 11, utilizando Python 3.12.3 e NumPy 2.5.0. O processador utilizado foi um Ryzen 5 5600 com 32GB de memória RAM DDR4 3200MHZ. A geração dos \textit{ensembles} foi paralelizada via \texttt{multiprocessing}, com múltiplos processos executados simultaneamente para reduzir o tempo total de simulação.
 
 \section{Validação e Resultados}
 
@@ -72,7 +72,7 @@ A Figura \ref{fig:rho_vs_T} apresenta a proporção assintótica média de coope
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{dados_artigo/rho_infty_vs_T.png}
-\caption{Proporção assintótica de cooperadores ($\rho_\infty$) vs Tentação ($T$).}
+\caption{Proporção assintótica de cooperadores ($\rho_\infty$) vs Tentação. Parâmetros utilizados: --Tmin  1.0 --Tmax 2.0 --dt 0.02 --ensembles 50 --L 1000 -rho0 0.7 --z 7 --rodadas 500 --symmetric ($T$).}
 \label{fig:rho_vs_T}
 \end{figure}
 
